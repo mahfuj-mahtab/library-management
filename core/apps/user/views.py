@@ -62,7 +62,7 @@ class AdminCreateBook(APIView):
     def post(self,request):
         if not request.user.has_perm('books.add_book'):
             return Response({"error" : "Permission Deinied"}, status = 403)
-        author = get_object_or_404(Author,id = request.data['author_id'])
+        author = get_object_or_404(Author, pk = request.data['author'])
         serializers = BookSerializer(data = request.data)
         if(serializers.is_valid()):
             serializers.save(author = author)
@@ -83,7 +83,7 @@ class AdminSingleBook(APIView):
         if not request.user.has_perm('books.edit_book'):
             return Response({"error" : "Permission Deinied"}, status = 403)
         book = get_object_or_404(Book,id = b_id)
-        author = get_object_or_404(Author,id = request.data['author_id'])
+        author = get_object_or_404(Author,id = request.data['author'])
         serializers = BookSerializer(book,data = request.data,partial = True)
         if(serializers.is_valid()):
             serializers.save(author = author)
