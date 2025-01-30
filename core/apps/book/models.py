@@ -44,15 +44,6 @@ class BorrowBook(models.Model):
     def __str__(self):
         return f"{self.user.username} borrowed {self.book.title}"
     
-class Fine(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="fines")
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    paid = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.username} fined {self.amount} BDT for {self.book.title}"
     
 
 class BorrowLimit(models.Model):

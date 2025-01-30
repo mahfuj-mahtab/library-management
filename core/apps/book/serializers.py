@@ -12,8 +12,3 @@ class BookBorrowSerializer(serializers.ModelSerializer):
     class Meta:
          model = BorrowBook
          fields = '__all__'
-class FineSerializer(serializers.ModelSerializer):
-    # user = UserSerializers()
-    class Meta:
-         model = Fine
-         fields = '__all__'

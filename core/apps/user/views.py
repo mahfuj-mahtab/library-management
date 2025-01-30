@@ -47,7 +47,7 @@ class LoginView(APIView):
             }
             return Response({"message": data}, status=status.HTTP_200_OK)
         else:
-            # Handle failed login
+           
             return Response({"error": "Invalid email or password."}, status=status.HTTP_401_UNAUTHORIZED)
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -55,8 +55,18 @@ class LogoutView(APIView):
         logout(request)
         return Response({"message" : "Logout"},status = 200)
     
-
-
+class AdminCheckBorrowedBooks(APIView):
+    permission_classes = [IsAdminUser]
+    def get(self,request):
+        data = []
+        borrowed_books = BorrowBook.objects.filter(status = 'APPROVED')
+        due_borrowed = BorrowBook.objects.filter(status = 'HOLD')
+        
+        data = {
+            "borrowed_books" : BookBorrowSerializer(borrowed_books,many = True).data,
+            "due_borrowed" : BookBorrowSerializer(due_borrowed,many = True).data
+        }
+        return Response({"data" : data}, status = 200)
 class AdminCreateBook(APIView):
     permission_classes = [IsAdminUser]
     def post(self,request):
@@ -120,8 +130,7 @@ class UserBookBorrow(APIView):
         serializers = BookBorrowSerializer(data = request.data)
         if(serializers.is_valid()):
             serializers.save(book = book, user = user)
-            # book.total_copies-=1
-            # book.save()
+           
             return Response({'message' : 'Successfully Book Borrowed'},status = 201)
         else:
             return Response({'error' : serializers.errors},status = status.HTTP_403_FORBIDDEN)

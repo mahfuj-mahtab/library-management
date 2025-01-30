@@ -12,8 +12,10 @@ urlpatterns = [
     # user book borrow url 
     path("borrow/book/", UserBookBorrow.as_view(), name="UserBookBorrow"),  # User Book Borrow url
     path("return/book/", UserBookReturn.as_view(), name="UserBookReturn"),  # User Book return url
+    path("/book/", UserBookReturn.as_view(), name="UserBookReturn"),  # User Book return url
 
     # admin panel 
+    path("admin/check/borrowed/books/", AdminCheckBorrowedBooks.as_view(), name="AdmiAdminCheckBorrowedBooksnCreateBook"),  
     path("admin/create/book/", AdminCreateBook.as_view(), name="AdminCreateBook"),  #admin create book url
     path("admin/single/book/<int:b_id>/", AdminSingleBook.as_view(), name="AdminSingleBook"),  #admin single book url for get put and delete
 ]
