@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-z_*n44*ba--liip#02#g&=2p8c3^*g)j*29s&1=#)_(tlhsi17
 DEBUG = True
 
 ALLOWED_HOSTS = []
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = 'user.CustomUser'
 
 # Application definition
 
@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "apps.api",
     "apps.author",
     "apps.book",
+    "rest_framework",
+    "rest_framework_simplejwt",
 ]
 
 MIDDLEWARE = [
@@ -54,6 +56,11 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "core.urls"
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
 
 TEMPLATES = [
     {

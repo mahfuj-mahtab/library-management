@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from apps.author.models import *
+from apps.user.models import *
 class Book(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
@@ -21,10 +22,10 @@ class BorrowBook(models.Model):
         ('RETURNED','RETURNED'),
         ('HOLD','HOLD'),
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="borrowed_books")
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="borrowed_books")
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     borrowed_at = models.DateTimeField(auto_now_add=True)
-    return_deadline = models.DateTimeField()
+    return_deadline = models.DateTimeField(null=True, blank=True)
     returned_at = models.DateTimeField(null=True, blank=True)
     status = models.TextField(choices=status,default = 'APPROVED')
     fine = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
@@ -32,13 +33,19 @@ class BorrowBook(models.Model):
     def save(self, *args, **kwargs):
         if not self.return_deadline:
             self.return_deadline = timezone.now() + timedelta(days=14)
-        super().save(*args, **kwargs)
+        
+        if self.status == 'RETURNED' and self.returned_at:
+            late_days = (self.returned_at - self.return_deadline).days
+            fine_per_day = 5.00  
+            self.fine = late_days * fine_per_day
+            self.status = 'HOLD'
 
+        super().save(*args, **kwargs)
     def __str__(self):
         return f"{self.user.username} borrowed {self.book.title}"
     
 class Fine(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="fines")
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="fines")
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     paid = models.BooleanField(default=False)
